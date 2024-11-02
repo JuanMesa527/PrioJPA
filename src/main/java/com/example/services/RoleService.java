@@ -6,7 +6,6 @@
 package com.example.services;
 
 import com.example.PersistenceManager;
-import com.example.models.Competitor;
 import com.example.models.RoleDTO;
 import com.example.models.RolePrio;
 import com.example.models.UserPrio;

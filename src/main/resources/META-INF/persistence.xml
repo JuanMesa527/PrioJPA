@@ -6,6 +6,7 @@
     <class>com.example.models.RolePrio</class>
     <class>com.example.models.Project</class>
     <class>com.example.models.ProjectType</class>
+    <class>com.example.models.VoteDates</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/PrioDB"/>
       <property name="javax.persistence.jdbc.user" value="prio"/>

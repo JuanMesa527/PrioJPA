@@ -6,7 +6,6 @@
 package com.example.services;
 
 import com.example.PersistenceManager;
-import com.example.models.Competitor;
 import com.example.models.RolePrio;
 import com.example.models.UserPrio;
 import com.example.models.UserDTO;
@@ -75,7 +74,7 @@ public class UserService {
         try {
             birthday = formato.parse(user.getBirthday());
         } catch (ParseException ex) {
-            System.out.println("fecha no valida");;
+            System.out.println("fecha no valida");
         }
 
         Query q = entityManager.createQuery("SELECT r FROM RolePrio r WHERE r.code = '" + user.getRole() + "'");

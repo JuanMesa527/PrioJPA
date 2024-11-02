@@ -7,7 +7,9 @@ package com.example.models;
 
 import com.sun.istack.NotNull;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
 import javax.persistence.Column;
@@ -26,7 +28,7 @@ import javax.persistence.TemporalType;
  * @author Mauricio
  */
 @Entity
-public class ProjectType implements Serializable {
+public class VoteDates implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,43 +45,58 @@ public class ProjectType implements Serializable {
     @Column(name = "updated_at")
     @Temporal(TemporalType.DATE)
     private Calendar updatedAt;
-
-    @NotNull
-    private String name;
-
-    @NotNull
-    private String description;
     
-    @OneToMany(mappedBy = "projectType")
-    private Set<Project> projects;
+    @NotNull
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
 
-    public ProjectType() {
+    @NotNull
+    @Temporal(TemporalType.DATE)
+    private Date closingDate;
+
+    @NotNull
+    private String status;
+
+    public VoteDates() {
 
     }
 
-    public ProjectType(String name, String description) {
-        this.name = name;
-        this.description = description;
+    public VoteDates(Date startDate, Date closingDate, String status) {
+        this.startDate = startDate;
+        this.closingDate = closingDate;
+        this.status = status;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getStartDate() {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        String x = formato.format(startDate);
+        return x;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public String getDescription() {
-        return description;
+    public String getClosingDate() {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        String x = formato.format(closingDate);
+        return x;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setClosingDate(Date closingDate) {
+        this.closingDate = closingDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @PreUpdate
