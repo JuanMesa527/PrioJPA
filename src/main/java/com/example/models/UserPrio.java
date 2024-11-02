@@ -67,6 +67,7 @@ public class UserPrio implements Serializable {
     @NotNull
     private String address;
 
+    @NotNull
     @ManyToOne
     private RolePrio rolePrio;
 

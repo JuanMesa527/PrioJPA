@@ -15,25 +15,23 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import org.eclipse.jetty.server.Authentication.User;
 
 /**
  *
  * @author Mauricio
  */
 @Entity
-public class RolePrio implements Serializable {
+public class ProjectType implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
-    private Long code;
+    private Long id;
 
     @NotNull
     @Column(name = "created_at", updatable = false)
@@ -44,31 +42,35 @@ public class RolePrio implements Serializable {
     @Column(name = "updated_at")
     @Temporal(TemporalType.DATE)
     private Calendar updatedAt;
-    
+
+    @NotNull
+    private String name;
+
     @NotNull
     private String description;
     
-    @NotNull
-    private String responsabilities;
+    @OneToMany(mappedBy = "projectType")
+    private Set<Project> projects;
 
-    @OneToMany(mappedBy = "rolePrio")
-    private Set<UserPrio> userPrio;
-
-    public RolePrio() {
+    public ProjectType() {
 
     }
 
-    public RolePrio(String description, String responsabilities) {
+    public ProjectType(String name, String description) {
+        this.name = name;
         this.description = description;
-        this.responsabilities = responsabilities;
     }
 
-    public Long getCode() {
-        return code;
+    public Long getId() {
+        return id;
     }
 
-    public void setCode(Long code) {
-        this.code = code;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -79,14 +81,6 @@ public class RolePrio implements Serializable {
         this.description = description;
     }
 
-    public String getResponsabilities() {
-        return responsabilities;
-    }
-
-    public void setResponsabilities(String responsabilities) {
-        this.responsabilities = responsabilities;
-    }
-
     @PreUpdate
     private void updateTimestamp() {
         this.updatedAt = Calendar.getInstance();
@@ -95,10 +89,5 @@ public class RolePrio implements Serializable {
     @PrePersist
     private void creationTimestamp() {
         this.createdAt = this.updatedAt = Calendar.getInstance();
-    }
-
-    @Override
-    public String toString() {
-        return "RolePrio{" + "code=" + code + ", description=" + description + ", responsabilities=" + responsabilities + '}';
     }
 }

@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -44,45 +45,42 @@ public class Project implements Serializable {
     private Calendar updatedAt;
     
     @NotNull
-    private String password;
-
     private String name;
-
-    private String surname;
-
-    private int age;
-
-    private String telephone;
-
-    private String cellphone;
-
+    
     @NotNull
-    private String address;
-
-    private String city;
-
-    private String country;
-
-    private boolean winner;
-
-    @OneToMany(cascade = ALL, mappedBy = "competitor")
-    private Set<Producto> products;
+    private double scope;
+    
+    @NotNull
+    private String periodTime;
+    
+    @NotNull
+    @ManyToOne
+    private ProjectType projectType;
+    
+    @NotNull
+    private String locality;
+    
+    @NotNull
+    private String budget;
+    
+    @NotNull
+    private int benefited;
+    
+    private String[] associatedAspects;
 
     public Project() {
 
     }
 
-    public Project(String nameN, String surnameN, int ageN, String telephoneN, String cellphoneN, String addressN, String passwordN, String cityN, String countryN, boolean winnerN) {
-        name = nameN;
-        surname = surnameN;
-        age = ageN;
-        telephone = telephoneN;
-        cellphone = cellphoneN;
-        address = addressN;
-        password = passwordN;
-        city = cityN;
-        country = countryN;
-        winner = winnerN;
+    public Project(String name, double scope, String periodTime, ProjectType proyectType, String locality, String budget, int benefited, String[] associatedAspects) {
+        this.name = name;
+        this.scope = scope;
+        this.periodTime = periodTime;
+        this.projectType = proyectType;
+        this.locality = locality;
+        this.budget = budget;
+        this.benefited = benefited;
+        this.associatedAspects = associatedAspects;
     }
 
     public Long getId() {
@@ -97,76 +95,60 @@ public class Project implements Serializable {
         this.name = name;
     }
 
-    public String getSurname() {
-        return surname;
+    public double getScope() {
+        return scope;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setScope(double scope) {
+        this.scope = scope;
     }
 
-    public int getAge() {
-        return age;
+    public String getPeriodTime() {
+        return periodTime;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setPeriodTime(String periodTime) {
+        this.periodTime = periodTime;
     }
 
-    public String getTelephone() {
-        return telephone;
+    public ProjectType getProjectType() {
+        return projectType;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
     }
 
-    public String getCellphone() {
-        return cellphone;
+    public String getLocality() {
+        return locality;
     }
 
-    public void setCellphone(String cellphone) {
-        this.cellphone = cellphone;
+    public void setLocality(String locality) {
+        this.locality = locality;
     }
 
-    public String getAddress() {
-        return address;
+    public String getBudget() {
+        return budget;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setBudget(String budget) {
+        this.budget = budget;
     }
 
-    public String getPassword() {
-        return password;
+    public int getBenefited() {
+        return benefited;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setBenefited(int benefited) {
+        this.benefited = benefited;
     }
 
-    public String getCity() {
-        return city;
+    public String[] getAssociatedAspects() {
+        return associatedAspects;
     }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public boolean isWinner() {
-        return winner;
-    }
-
-    public void setWinner(boolean winner) {
-        this.winner = winner;
+    public void setAssociatedAspects(String[] associatedAspects) {
+        this.associatedAspects = associatedAspects;
     }
 
     @PreUpdate
@@ -177,10 +159,6 @@ public class Project implements Serializable {
     @PrePersist
     private void creationTimestamp() {
         this.createdAt = this.updatedAt = Calendar.getInstance();
-    }
-
-    public Set<Producto> getProducts() {
-        return products;
     }
 
 }

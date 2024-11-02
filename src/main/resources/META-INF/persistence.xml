@@ -4,6 +4,8 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>com.example.models.UserPrio</class>
     <class>com.example.models.RolePrio</class>
+    <class>com.example.models.Project</class>
+    <class>com.example.models.ProjectType</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/PrioDB"/>
       <property name="javax.persistence.jdbc.user" value="prio"/>

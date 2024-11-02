@@ -6,18 +6,11 @@
 package com.example.services;
 
 import com.example.PersistenceManager;
-import com.example.models.Competitor;
+import com.example.models.ProjectType;
+import com.example.models.ProjectTypeDTO;
 import com.example.models.RoleDTO;
 import com.example.models.RolePrio;
-import com.example.models.UserPrio;
-import com.example.models.UserDTO;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,17 +24,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
  *
- * @author Mauricio
+ * @author User
  */
-@Path("/roles")
+@Path("/projectTypes")
 @Produces(MediaType.APPLICATION_JSON)
-public class RoleService {
-
+public class ProjectTypeService {
     @PersistenceContext(unitName = "PrioPU")
     EntityManager entityManager;
 
@@ -58,59 +49,59 @@ public class RoleService {
     @Path("/get")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
-        Query q = entityManager.createQuery("select u from RolePrio u order by u.code ASC");
-        List<RolePrio> roles = q.getResultList();
+        Query q = entityManager.createQuery("select u from ProjectType u order by u.id ASC");
+        List<ProjectType> projectTypes = q.getResultList();
 
-        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(roles).build();
+        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(projectTypes).build();
     }
 
     @POST
     @Path("/add")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createRole(RoleDTO role) {
+    public Response createProjectType(ProjectTypeDTO projectType) {
         JSONObject rta = new JSONObject();
 
-        RolePrio roleTmp = new RolePrio(role.getDescription(), role.getResponsabilities());
+        ProjectType projectTypeTmp = new ProjectType(projectType.getName(), projectType.getDescription());
         try {
             entityManager.getTransaction().begin();
-            entityManager.persist(roleTmp);
+            entityManager.persist(projectTypeTmp);
             entityManager.getTransaction().commit();
-            entityManager.refresh(roleTmp);
-            rta.put("role_code", roleTmp.getCode());
+            entityManager.refresh(projectTypeTmp);
+            rta.put("projectType_id", projectTypeTmp.getId());
         } catch (Throwable t) {
             t.printStackTrace();
             if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
-            roleTmp = null;
+            projectTypeTmp = null;
         } finally {
             entityManager.clear();
             entityManager.close();
         }
 
-        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(roleTmp).build();
+        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(projectTypeTmp).build();
     }
 
     @DELETE
-    @Path("/delete/{code}")
+    @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteRole(@PathParam("code") Long code) {
+    public Response deleteProjectType(@PathParam("id") Long id) {
         try {
-            RolePrio role = entityManager.find(RolePrio.class, code);
-            if (role != null) {
+            ProjectType projectType = entityManager.find(ProjectType.class, id);
+            if (projectType != null) {
                 entityManager.getTransaction().begin();
-                entityManager.remove(role);
+                entityManager.remove(projectType);
                 entityManager.getTransaction().commit();
-                return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("Role deleted successfully").build();
+                return Response.status(200).header("Access-Control-Allow-Origin", "*").entity("Project type deleted successfully").build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").entity("Role not found").build();
+                return Response.status(Response.Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").entity("Project type not found").build();
             }
         } catch (Throwable t) {
             t.printStackTrace();
             if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header("Access-Control-Allow-Origin", "*").entity("Error deleting Role").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header("Access-Control-Allow-Origin", "*").entity("Error deleting Project type").build();
         } finally {
             entityManager.clear();
             entityManager.close();
@@ -118,34 +109,34 @@ public class RoleService {
     }
 
     @PUT
-    @Path("/update/{code}")
+    @Path("/update/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateRole(@PathParam("code") Long code, RoleDTO role) {
+    public Response updateRole(@PathParam("id") Long id, ProjectTypeDTO ProjectType) {
         try {
-            RolePrio existingRole = entityManager.find(RolePrio.class, code);
-            if (existingRole != null) {
+            ProjectType existingProjectType = entityManager.find(ProjectType.class, id);
+            if (existingProjectType != null) {
 
-                if (role.getDescription() != null) {
-                    existingRole.setDescription(role.getDescription());
+                if (ProjectType.getDescription() != null) {
+                    existingProjectType.setDescription(ProjectType.getDescription());
                 }
-                if (role.getResponsabilities() != null) {
-                    existingRole.setResponsabilities(role.getResponsabilities());
+                if (ProjectType.getName() != null) {
+                    existingProjectType.setName(ProjectType.getName());
                 }
                 entityManager.getTransaction().begin();
-                entityManager.merge(existingRole);
+                entityManager.merge(existingProjectType);
                 entityManager.getTransaction().commit();
-                entityManager.refresh(existingRole);
+                entityManager.refresh(existingProjectType);
 
-                return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(existingRole).build();
+                return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(existingProjectType).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").entity("Role not found").build();
+                return Response.status(Response.Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").entity("Project type not found").build();
             }
         } catch (Throwable t) {
             t.printStackTrace();
             if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header("Access-Control-Allow-Origin", "*").entity("Error updating Role").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header("Access-Control-Allow-Origin", "*").entity("Error updating project Type").build();
         } finally {
             entityManager.clear();
             entityManager.close();
