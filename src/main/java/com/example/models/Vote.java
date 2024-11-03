@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -28,7 +29,7 @@ import javax.persistence.TemporalType;
  * @author Mauricio
  */
 @Entity
-public class VoteDates implements Serializable {
+public class Vote implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,59 +48,53 @@ public class VoteDates implements Serializable {
     private Calendar updatedAt;
     
     @NotNull
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
-
-    @NotNull
-    @Temporal(TemporalType.DATE)
-    private Date closingDate;
-
-    @NotNull
-    private String status;
+    @ManyToOne
+    private Project project;
     
-    @OneToMany(mappedBy = "voteDates")
-    private Set<Vote> vote;
+    @NotNull
+    @ManyToOne
+    private UserPrio userPrio;
+    
+    @NotNull
+    @ManyToOne
+    private VoteDates voteDates;
 
-    public VoteDates() {
+    public Vote() {
 
     }
 
-    public VoteDates(Date startDate, Date closingDate, String status) {
-        this.startDate = startDate;
-        this.closingDate = closingDate;
-        this.status = status;
+    public Vote(Project project, UserPrio userPrio, VoteDates voteDates) {
+        this.project = project;
+        this.userPrio = userPrio;
+        this.voteDates = voteDates;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getStartDate() {
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-        String x = formato.format(startDate);
-        return x;
+    public Project getProject() {
+        return project;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
-    public String getClosingDate() {
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-        String x = formato.format(closingDate);
-        return x;
+    public UserPrio getUserPrio() {
+        return userPrio;
     }
 
-    public void setClosingDate(Date closingDate) {
-        this.closingDate = closingDate;
+    public void setUserPrio(UserPrio userPrio) {
+        this.userPrio = userPrio;
     }
 
-    public String getStatus() {
-        return status;
+    public VoteDates getVoteDates() {
+        return voteDates;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setVoteDates(VoteDates voteDates) {
+        this.voteDates = voteDates;
     }
 
     @PreUpdate

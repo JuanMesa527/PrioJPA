@@ -93,7 +93,7 @@ public class VoteDatesService {
             entityManager.persist(voteTmp);
             entityManager.getTransaction().commit();
             entityManager.refresh(voteTmp);
-            rta.put("vote_id", voteTmp.getId());
+            rta.put("voteDates_id", voteTmp.getId());
         } catch (Throwable t) {
             t.printStackTrace();
             if (entityManager.getTransaction().isActive()) {

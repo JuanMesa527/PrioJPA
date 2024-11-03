@@ -71,6 +71,9 @@ public class UserPrio implements Serializable {
     @NotNull
     @ManyToOne
     private RolePrio rolePrio;
+    
+    @OneToMany(mappedBy = "userPrio")
+    private Set<Vote> vote;
 
     public UserPrio() {
 

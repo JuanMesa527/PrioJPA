@@ -68,6 +68,9 @@ public class Project implements Serializable {
     private int benefited;
     
     private String[] associatedAspects;
+    
+    @OneToMany(mappedBy = "project")
+    private Set<Vote> vote;
 
     public Project() {
 
