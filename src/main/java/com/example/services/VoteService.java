@@ -7,6 +7,7 @@ package com.example.services;
 
 import com.example.PersistenceManager;
 import com.example.models.Project;
+import com.example.models.RolePrio;
 import com.example.models.UserPrio;
 import com.example.models.Vote;
 import com.example.models.VoteDTO;
@@ -23,6 +24,7 @@ import javax.persistence.Query;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -59,45 +61,55 @@ public class VoteService {
     }
 
     @POST
-    @Path("/add")
+    @Path("/add/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createVote(VoteDTO vote) {
-        JSONObject rta = new JSONObject();
+    public Response createVote(@PathParam("id") Long id, VoteDTO vote) {
+        UserPrio user = entityManager.find(UserPrio.class, id);
+        RolePrio role = (RolePrio) user.getRole();
+        if (user != null) {
+            if (role.getCode() == 1) {
+                JSONObject rta = new JSONObject();
 
-        Query q = entityManager.createQuery("SELECT r FROM VoteDates r WHERE r.id = '" + vote.getVoteDates() + "'");
-        VoteDates voteDates = (VoteDates) q.getSingleResult();
-        
-        Query qUser = entityManager.createQuery("SELECT r FROM UserPrio r WHERE r.id = '" + vote.getUserPrio() + "'");
-        UserPrio userPrio = (UserPrio) qUser.getSingleResult();
-        
-        Query qComp = entityManager.createQuery("SELECT COUNT(r) FROM Vote r WHERE r.userPrio.id = '" + userPrio.getId() + "' and r.voteDates.id= '" + voteDates.getId() + "'");
-        Long voteComp = (Long) qComp.getSingleResult();
-        
-        if (voteDates.getStatus().equals("Activo") && voteComp == 0) {
+                Query q = entityManager.createQuery("SELECT r FROM VoteDates r WHERE r.id = '" + vote.getVoteDates() + "'");
+                VoteDates voteDates = (VoteDates) q.getSingleResult();
 
-            Query qProject = entityManager.createQuery("SELECT r FROM Project r WHERE r.id = '" + vote.getProject() + "'");
-            Project project = (Project) qProject.getSingleResult();
+                Query qUser = entityManager.createQuery("SELECT r FROM UserPrio r WHERE r.id = '" + vote.getUserPrio() + "'");
+                UserPrio userPrio = (UserPrio) qUser.getSingleResult();
 
-            Vote voteTmp = new Vote(project, userPrio, voteDates);
-            try {
-                entityManager.getTransaction().begin();
-                entityManager.persist(voteTmp);
-                entityManager.getTransaction().commit();
-                entityManager.refresh(voteTmp);
-                rta.put("vote_id", voteTmp.getId());
-            } catch (Throwable t) {
-                t.printStackTrace();
-                if (entityManager.getTransaction().isActive()) {
-                    entityManager.getTransaction().rollback();
+                Query qComp = entityManager.createQuery("SELECT COUNT(r) FROM Vote r WHERE r.userPrio.id = '" + userPrio.getId() + "' and r.voteDates.id= '" + voteDates.getId() + "'");
+                Long voteComp = (Long) qComp.getSingleResult();
+
+                if (voteDates.getStatus().equals("Activo") && voteComp == 0) {
+
+                    Query qProject = entityManager.createQuery("SELECT r FROM Project r WHERE r.id = '" + vote.getProject() + "'");
+                    Project project = (Project) qProject.getSingleResult();
+
+                    Vote voteTmp = new Vote(project, userPrio, voteDates);
+                    try {
+                        entityManager.getTransaction().begin();
+                        entityManager.persist(voteTmp);
+                        entityManager.getTransaction().commit();
+                        entityManager.refresh(voteTmp);
+                        rta.put("vote_id", voteTmp.getId());
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        if (entityManager.getTransaction().isActive()) {
+                            entityManager.getTransaction().rollback();
+                        }
+                        voteTmp = null;
+                    } finally {
+                        entityManager.clear();
+                        entityManager.close();
+                    }
+
+                    return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(voteTmp).build();
                 }
-                voteTmp = null;
-            } finally {
-                entityManager.clear();
-                entityManager.close();
+                return Response.status(Response.Status.BAD_REQUEST).header("Access-Control-Allow-Origin", "*").entity("Not active dates").build();
+            } else {
+                return Response.status(Response.Status.UNAUTHORIZED).header("Access-Control-Allow-Origin", "*").entity("Protected content").build();
             }
-
-            return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(voteTmp).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").entity("User not found").build();
         }
-        return Response.status(Response.Status.BAD_REQUEST).header("Access-Control-Allow-Origin", "*").entity("Not active dates").build();
     }
 }

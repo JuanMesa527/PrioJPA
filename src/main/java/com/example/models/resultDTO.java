@@ -13,33 +13,31 @@ public class resultDTO {
     private String locality;
     private Long projectId;
     private Long totalVotes;
-
+    
     public resultDTO() {
     }
 
     public String getLocality() {
-        return locality;
+        return "Locality: " + locality;
     }
 
     public void setLocality(String locality) {
         this.locality = locality;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public String getProjectId() {
+        return "Project:" + projectId;
     }
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
-    public Long getTotalVotes() {
-        return totalVotes;
+    public String getTotalVotes() {
+        return "Total votes:" + totalVotes;
     }
 
     public void setTotalVotes(Long totalVotes) {
         this.totalVotes = totalVotes;
-    }
-    
-    
+    }   
 }
