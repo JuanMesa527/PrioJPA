@@ -9,32 +9,43 @@ package com.example.models;
  *
  * @author User
  */
-public class resultDTO {
+public class WinnerDTO {
     private String locality;
     private Long projectId;
     private Long totalVotes;
     
-    public resultDTO() {
+    public WinnerDTO() {
+    }
+    
+    public WinnerDTO(String locality, Long totalVotes) {
+        this.locality = locality;
+        this.totalVotes = totalVotes;
+    }
+    
+    public WinnerDTO(String locality, Long projectId, Long totalVotes) {
+        this.locality = locality;
+        this.projectId = projectId;
+        this.totalVotes = totalVotes;
     }
 
     public String getLocality() {
-        return "Locality: " + locality;
+        return locality;
     }
 
     public void setLocality(String locality) {
         this.locality = locality;
     }
 
-    public String getProjectId() {
-        return "Project:" + projectId;
+    public Long getProjectId() {
+        return projectId;
     }
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
-    public String getTotalVotes() {
-        return "Total votes:" + totalVotes;
+    public long getTotalVotes() {
+        return totalVotes;
     }
 
     public void setTotalVotes(Long totalVotes) {

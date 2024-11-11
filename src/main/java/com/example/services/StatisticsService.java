@@ -6,10 +6,11 @@
 package com.example.services;
 
 import com.example.PersistenceManager;
+import com.example.models.LocalityTotalVotesDTO;
 import com.example.models.RolePrio;
 import com.example.models.UserPrio;
-import com.example.models.resultDTO;
-import com.example.models.resultFilteredDTO;
+import com.example.models.WinnerDTO;
+import com.example.models.ResultFilteredDTO;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -50,7 +51,7 @@ public class StatisticsService {
         RolePrio role = (RolePrio) user.getRole();
         if (user != null) {
             if (role.getCode() == 3) {
-                Query q = entityManager.createQuery("SELECT p.locality, v.project.id, COUNT(v) as totalVotes\n"
+                Query q = entityManager.createQuery("SELECT NEW com.example.models.WinnerDTO(p.locality, v.project.id, COUNT(v))\n"
                         + "FROM Vote v\n"
                         + "JOIN v.project p\n"
                         + "GROUP BY p.locality, v.project.id\n"
@@ -68,7 +69,7 @@ public class StatisticsService {
                         + "GROUP BY p3.id, p3.locality\n"
                         + ")\n"
                         + ")");
-                List<resultDTO> results = q.getResultList();
+                List<WinnerDTO> results = q.getResultList();
                 return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(results).build();
             } else {
                 return Response.status(Response.Status.UNAUTHORIZED).header("Access-Control-Allow-Origin", "*").entity("Protected content").build();
@@ -86,14 +87,12 @@ public class StatisticsService {
         RolePrio role = (RolePrio) user.getRole();
         if (user != null) {
             if (role.getCode() == 3) {
-                Query q = entityManager.createQuery("SELECT \n"
-                        + "p.locality, \n"
-                        + "COUNT(v) as totalVotes\n"
+                Query q = entityManager.createQuery("SELECT NEW com.example.models.LocalityTotalVotesDTO(p.locality, COUNT(v)) \n" 
                         + "FROM Vote v\n"
                         + "JOIN v.project p\n"
                         + "GROUP BY p.locality");
-                List<resultDTO> results = q.getResultList();
-
+                List<LocalityTotalVotesDTO> results = q.getResultList();
+                
                 return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(results).build();
             } else {
                 return Response.status(Response.Status.UNAUTHORIZED).header("Access-Control-Allow-Origin", "*").entity("Protected content").build();
@@ -111,28 +110,28 @@ public class StatisticsService {
         RolePrio role = (RolePrio) user.getRole();
         if (user != null) {
             if (role.getCode() == 3) {
-                Query q = entityManager.createQuery("SELECT \n"
-                        + "    CASE\n"
-                        + "        WHEN u.birthday >= '2006-01-01' THEN 'Menor de 18'\n"
-                        + "        WHEN u.birthday >= '1999-01-01' AND u.birthday < '2006-01-01' THEN '18-25'\n"
-                        + "        WHEN u.birthday >= '1989-01-01' AND u.birthday < '1999-01-01' THEN '26-35'\n"
-                        + "        WHEN u.birthday >= '1974-01-01' AND u.birthday < '1989-01-01' THEN '36-50'\n"
-                        + "        WHEN u.birthday >= '1959-01-01' AND u.birthday < '1974-01-01' THEN '51-65'\n"
-                        + "        ELSE 'Mayor de 65'\n"
-                        + "    END as range,\n"
-                        + "    COUNT(v.id) as totalVotes\n"
+                Query q = entityManager.createQuery("SELECT NEW com.example.models.ResultFilteredDTO( \n"
+                        + "CASE\n"
+                        + "WHEN u.birthday >= '2006-01-01' THEN 'Menor de 18'\n"
+                        + "WHEN u.birthday >= '1999-01-01' AND u.birthday < '2006-01-01' THEN '18-25'\n"
+                        + "WHEN u.birthday >= '1989-01-01' AND u.birthday < '1999-01-01' THEN '26-35'\n"
+                        + "WHEN u.birthday >= '1974-01-01' AND u.birthday < '1989-01-01' THEN '36-50'\n"
+                        + "WHEN u.birthday >= '1959-01-01' AND u.birthday < '1974-01-01' THEN '51-65'\n"
+                        + "ELSE 'Mayor de 65'\n"
+                        + "END,\n"
+                        + "COUNT(v.id))\n"
                         + "FROM Vote v\n"
                         + "JOIN v.userPrio u\n"
                         + "GROUP BY \n"
-                        + "    CASE\n"
-                        + "        WHEN u.birthday >= '2006-01-01' THEN 'Menor de 18'\n"
-                        + "        WHEN u.birthday >= '1999-01-01' AND u.birthday < '2006-01-01' THEN '18-25'\n"
-                        + "        WHEN u.birthday >= '1989-01-01' AND u.birthday < '1999-01-01' THEN '26-35'\n"
-                        + "        WHEN u.birthday >= '1974-01-01' AND u.birthday < '1989-01-01' THEN '36-50'\n"
-                        + "        WHEN u.birthday >= '1959-01-01' AND u.birthday < '1974-01-01' THEN '51-65'\n"
-                        + "        ELSE 'Mayor de 65'\n"
-                        + "    END\n");
-                List<resultFilteredDTO> results = q.getResultList();
+                        + "CASE\n"
+                        + "WHEN u.birthday >= '2006-01-01' THEN 'Menor de 18'\n"
+                        + "WHEN u.birthday >= '1999-01-01' AND u.birthday < '2006-01-01' THEN '18-25'\n"
+                        + "WHEN u.birthday >= '1989-01-01' AND u.birthday < '1999-01-01' THEN '26-35'\n"
+                        + "WHEN u.birthday >= '1974-01-01' AND u.birthday < '1989-01-01' THEN '36-50'\n"
+                        + "WHEN u.birthday >= '1959-01-01' AND u.birthday < '1974-01-01' THEN '51-65'\n"
+                        + "ELSE 'Mayor de 65'\n"
+                        + "END\n");
+                List<ResultFilteredDTO> results = q.getResultList();
                 return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(results).build();
             } else {
                 return Response.status(Response.Status.UNAUTHORIZED).header("Access-Control-Allow-Origin", "*").entity("Protected content").build();
